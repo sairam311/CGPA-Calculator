@@ -12,58 +12,62 @@
       margin: 0;
       padding: 20px;
     }
+
     .container {
       max-width: 800px;
       margin: auto;
       background: white;
       padding: 30px;
       border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
+
     h2 {
       text-align: center;
       color: #2e86de;
     }
-    .header-row,
+
     .subject {
       display: flex;
       gap: 10px;
-      margin-bottom: 10px;
-      align-items: center;
+      margin-bottom: 15px;
+      align-items: flex-start;
       flex-wrap: wrap;
     }
-    .header-row span {
-      font-weight: bold;
-      flex: 0.6;
+
+    .subject label {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
       min-width: 100px;
+      font-size: 14px;
     }
-    .header-row span:nth-child(3) {
-      flex: 0.6;
-    }
+
     .subject input,
     .subject select {
       padding: 10px;
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 5px;
-      flex: 1;
-      min-width: 100px;
       box-sizing: border-box;
+      margin-top: 5px;
     }
-    .subject input[type="number"]:nth-of-type(2) {
-      flex: 0.6;
-    }
+
     .subject button.remove {
       background-color: #e74c3c;
       color: white;
       border: none;
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 5px;
       cursor: pointer;
+      height: 42px;
+      align-self: flex-end;
     }
+
     .subject button.remove:hover {
       background-color: #c0392b;
     }
+
     .buttons {
       display: flex;
       justify-content: space-between;
@@ -71,6 +75,7 @@
       flex-wrap: wrap;
       gap: 10px;
     }
+
     button {
       padding: 10px 20px;
       background: #2e86de;
@@ -80,15 +85,18 @@
       font-size: 16px;
       cursor: pointer;
     }
+
     button:hover {
       background: #1e6bb8;
     }
+
     #result {
       text-align: center;
       font-size: 20px;
       font-weight: bold;
       margin-top: 20px;
     }
+
     .developer-credit {
       position: fixed;
       bottom: 10px;
@@ -98,21 +106,49 @@
       background: #f0f0f0;
       padding: 6px 12px;
       border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
       z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .subject {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .subject button.remove {
+        width: 100%;
+      }
+
+      .buttons {
+        flex-direction: column;
+      }
+      .buttons button {
+        width: 100%;
+      }
+      #result {
+        font-size: 18px;
+      }
+      .developer-credit {
+        position: static;
+        text-align: center;
+        margin-top: 20px;
+        box-shadow: none;
+        background: transparent;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>CGPA Calculator</h2>
-    <!-- Header Labels -->
-    <div class="header-row">
-      <span>Credits</span>
-      <span>Grade</span>
-      <span>No. of Subjects</span>
-    </div>
-    <!-- Subject Fields Go Here -->
+  
     <div id="subjects"></div>
     <div class="buttons">
       <button onclick="addSubject()">Add Subject</button>
@@ -120,7 +156,7 @@
     </div>
     <div id="result"></div>
   </div>
-
+  <div class="developer-credit">Developed by Sai Ram</div>
   <script>
     const gradePointMap = {
       'O': 10,
@@ -131,23 +167,33 @@
       'C': 5,
       'F': 0
     };
+
     function addSubject() {
       const subjectDiv = document.createElement('div');
       subjectDiv.classList.add('subject');
 
       subjectDiv.innerHTML = `
-        <input type="number" placeholder="Credits" min="1" required>
-        <select required>
-          <option value="">Select Grade</option>
-          <option value="O">O</option>
-          <option value="A+">A+</option>
-          <option value="A">A</option>
-          <option value="B+">B+</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-          <option value="F">F</option>
-        </select>
-        <input type="number" placeholder="Count" min="1" value="1" required>
+        <label>
+          <strong>Credits</strong>
+          <input type="number" placeholder="Credits" min="1" required>
+        </label>
+        <label>
+          <strong>Grade</strong>
+          <select required>
+            <option value="">Select Grade</option>
+            <option value="O">O</option>
+            <option value="A+">A+</option>
+            <option value="A">A</option>
+            <option value="B+">B+</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="F">F</option>
+          </select>
+        </label>
+        <label>
+          <strong>No. of Subjects</strong>
+          <input type="number" placeholder="Count" min="1" value="1" required>
+        </label>
         <button class="remove" onclick="removeSubject(this)">Remove</button>
       `;
 
@@ -155,8 +201,7 @@
     }
 
     function removeSubject(button) {
-      const subjectDiv = button.parentElement;
-      subjectDiv.remove();
+      button.parentElement.remove();
     }
     
     function calculateCGPA() {
@@ -166,9 +211,15 @@
       let valid = true;
 
       subjectDivs.forEach(subject => {
-        const creditInput = subject.querySelector('input[type="number"]:nth-of-type(1)');
+        const inputs = subject.querySelectorAll('input[type="number"]');
+        const creditInput = inputs[0];
+        const countInput = inputs[1];
         const gradeSelect = subject.querySelector('select');
-        const countInput = subject.querySelector('input[type="number"]:nth-of-type(2)');
+
+        if (!creditInput || !countInput || !gradeSelect) {
+          valid = false;
+          return;
+        }
 
         const credits = parseFloat(creditInput.value);
         const grade = gradeSelect.value;
@@ -195,6 +246,5 @@
       for (let i = 0; i < 3; i++) addSubject();
     };
   </script>
-  <div class="developer-credit">Developed by Sai Ram</div>
 </body>
 </html>
